@@ -1,23 +1,22 @@
 pipeline {
-  environment {
-      registry = 'marrufoa/flask_app'
-      registryCredentials = 'docker'
-      cluster_name = 'skillstorm'
-      namespace = 'marrufoa'
-  }
-agent {
-  node {
-    label 'docker'
-  }
-
-}
-stages {
-  stage('Git') {
-    steps {
-      git(url: 'https://github.com/marrufoa/flasky', branch: 'main')
+    environment {
+        registry = 'marrufoa/flask_app'
+        registryCredentials = 'docker'
+        cluster_name = 'skillstorm'
+        namespace = 'marrufoa'
     }
+  agent {
+    node {
+      label 'docker'
+    }
+
   }
-}
+  stages {
+    stage('Git') {
+      steps {
+        git(url: 'https://github.com/marrufoa/flasky', branch: 'main')
+      }
+    }
 stage('Build Stage') {
     steps {
         script {
@@ -51,3 +50,4 @@ stage('Kubernetes') {
       }
     }
   }
+}
