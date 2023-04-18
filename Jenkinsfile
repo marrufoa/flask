@@ -1,4 +1,10 @@
 pipeline {
+    environment {
+        registry = 'marrufoa/flask_app'
+        registryCredentials = 'docker'
+        cluster_name = 'skillstorm'
+        namespace = 'marrufoa'
+    }
   agent {
     node {
       label 'docker'
@@ -8,27 +14,23 @@ pipeline {
   stages {
     stage('Git') {
       steps {
-        git(url: 'https://github.com/marrufoa/flask', branch: 'main')
+        git(url: 'https://github.com/marrufoa/flasky', branch: 'main')
       }
     }
-
-    stage('Build') {
-      steps {
-        sh 'docker build -t marrufoa/flask_app .'
+stage('Build Stage') {
+    steps {
+        script {
+            dockerImage = docker.build(registry)
+        }
       }
     }
-
-    stage('Docker Login') {
-      steps {
-        sh 'docker login -u marrufoa -p dckr_pat_l7nWwJC2Tn2t4Kr033m8yIFH72g'
+stage('Deploy Stage') {
+    steps {
+        script {
+           docker.withRegistry('', registryCredentials) {
+                dockerImage.push()
+            }
+          }
+        }
       }
-    }
-
-    stage('Docker Push') {
-      steps {
-        sh 'docker push marrufoa/flask_app'
-      }
-    }
-
-  }
 }
